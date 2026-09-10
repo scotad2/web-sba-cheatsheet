@@ -1345,3 +1345,424 @@ input:focus {}
 .card::before {}
 .card::after {}
 ```
+
+# SBA Templates
+
+## DOM Manipulation & Card Styling
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template 1</title>
+</head>
+
+<body>
+    <div class="card" id="book-card">
+        <!-- Do not hardcode the content here, use JavaScript -->
+    </div>
+
+    <script>
+        const book = {
+            "id": 42,
+            "title": "The Hitchhiker's Guide to the Galaxy",
+            "author": "Douglas Adams",
+            "year": 1979,
+            "genres": ["Science Fiction", "Comedy", "Adventure"],
+            "pages": 224,
+            "language": "English",
+            "imageUrl": "https://images-na.ssl-images-amazon.com/images/I/81XSN3hA5gL.jpg"
+        };
+
+        const card = document.getElementById("book-card");
+
+        // Create elements
+        const image = document.createElement("img");
+        const content = document.createElement("div");
+        const title = document.createElement("h1");
+        const author = document.createElement("h2");
+        const details = document.createElement("div");
+        const year = document.createElement("p");
+        const pages = document.createElement("p");
+        const language = document.createElement("p");
+        const genres = document.createElement("p");
+
+        // Populate elements
+        image.src = book.imageUrl;
+        image.alt = book.title;
+
+        title.textContent = book.title;
+        author.textContent = book.author;
+
+        year.textContent = `Year: ${book.year}`;
+        pages.textContent = `Pages: ${book.pages}`;
+        language.textContent = `Language: ${book.language}`;
+        genres.textContent = `Genres: ${book.genres.join(", ")}`;
+
+        // Build details section
+        details.appendChild(year);
+        details.appendChild(pages);
+        details.appendChild(language);
+        details.appendChild(genres);
+
+        // Build content section
+        content.appendChild(title);
+        content.appendChild(author);
+        content.appendChild(details);
+
+        // Build card
+        card.appendChild(image);
+        card.appendChild(content);
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .card {
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            color: #333;
+
+            /* Flexbox */
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+        .card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .card > div {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 8px;
+        }
+
+        .card h1 {
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 1em;
+        }
+
+        .card p {
+            margin: 0;
+        }
+
+        .card h1,
+        .card h2 {
+            text-transform: uppercase;
+        }
+    </style>
+</body>
+</html>
+```
+
+## API Fetching & Multiple Cards
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template 2</title>
+</head>
+
+<body>
+    <div class="cards-container">
+        <!-- Your cards will be added here using JavaScript -->
+    </div>
+
+    <script>
+        const apiUrl = "https://reqres.in/api/users?per_page=12";
+
+        async function loadUsers() {
+            const container = document.querySelector(".cards-container");
+
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                for (const user of data.data) {
+                    const card = document.createElement("div");
+                    const image = document.createElement("img");
+                    const name = document.createElement("h2");
+                    const email = document.createElement("p");
+
+                    // Populate card
+                    image.src = user.avatar;
+                    image.alt = `${user.first_name} ${user.last_name}`;
+
+                    name.textContent = `${user.first_name} ${user.last_name}`;
+                    email.textContent = user.email;
+
+                    // Add elements to card
+                    card.appendChild(image);
+                    card.appendChild(name);
+                    card.appendChild(email);
+
+                    // Add card to container
+                    container.appendChild(card);
+                }
+            } catch (error) {
+                console.error("Failed to fetch users:", error);
+                container.textContent = "Failed to load users.";
+            }
+        }
+
+        loadUsers();
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background-color: #f4f4f4;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .cards-container > div {
+            display: flex;
+            flex-direction: column;
+
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+
+            /* Makes cards in the same row the same height */
+            height: 100%;
+        }
+
+        .cards-container img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .cards-container h2,
+        .cards-container p {
+            margin: 10px 15px;
+        }
+
+        .cards-container p {
+            margin-top: 0;
+        }
+
+        /* Stack cards on mobile */
+        @media (max-width: 600px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
+```
+
+Filtering Data with Events
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template 3</title>
+</head>
+
+<body>
+    <div class="filter-container">
+        <!-- Select will be added using JavaScript -->
+    </div>
+
+    <div class="cards-container">
+        <!-- Cards will be added here using JavaScript -->
+    </div>
+
+    <script>
+        const apiUrl = "https://jsonplaceholder.typicode.com/photos?_limit=20";
+
+        let photos = [];
+
+        const filterContainer = document.querySelector(".filter-container");
+        const cardsContainer = document.querySelector(".cards-container");
+
+        async function loadPhotos() {
+            try {
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+
+                photos = await response.json();
+
+                createFilter();
+                displayCards(photos);
+            } catch (error) {
+                console.error("Failed to fetch photos:", error);
+                cardsContainer.textContent = "Failed to load photos.";
+            }
+        }
+
+        function createFilter() {
+            const select = document.createElement("select");
+
+            // "All" option
+            const allOption = document.createElement("option");
+            allOption.value = "all";
+            allOption.textContent = "All Albums";
+            select.appendChild(allOption);
+
+            // Get unique album IDs
+            const albumIds = [...new Set(photos.map(photo => photo.albumId))];
+
+            // Create option for each album ID
+            for (const albumId of albumIds) {
+                const option = document.createElement("option");
+
+                option.value = albumId;
+                option.textContent = `Album ${albumId}`;
+
+                select.appendChild(option);
+            }
+
+            // Listen for filter changes
+            select.addEventListener("change", () => {
+                const selectedAlbum = select.value;
+
+                if (selectedAlbum === "all") {
+                    displayCards(photos);
+                } else {
+                    const filteredPhotos = photos.filter(
+                        photo => photo.albumId === Number(selectedAlbum)
+                    );
+
+                    displayCards(filteredPhotos);
+                }
+            });
+
+            filterContainer.appendChild(select);
+        }
+
+        function displayCards(data) {
+            // Clear existing cards
+            cardsContainer.innerHTML = "";
+
+            for (const photo of data) {
+                const card = document.createElement("div");
+                const image = document.createElement("img");
+                const title = document.createElement("h2");
+                const album = document.createElement("p");
+
+                image.src = photo.thumbnailUrl;
+                image.alt = photo.title;
+
+                title.textContent = photo.title;
+                album.textContent = `Album ID: ${photo.albumId}`;
+
+                card.appendChild(image);
+                card.appendChild(title);
+                card.appendChild(album);
+
+                cardsContainer.appendChild(card);
+            }
+        }
+
+        loadPhotos();
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background-color: #f4f4f4;
+        }
+
+        .filter-container {
+            max-width: 1000px;
+            margin: 0 auto 20px;
+        }
+
+        .filter-container select {
+            padding: 8px;
+            font-size: 1rem;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .cards-container > div {
+            display: flex;
+            flex-direction: column;
+
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+
+            height: 100%;
+        }
+
+        .cards-container img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .cards-container h2 {
+            font-size: 1.1rem;
+            margin: 15px 15px 5px;
+        }
+
+        .cards-container p {
+            margin: 0 15px 15px;
+        }
+
+        @media (max-width: 600px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
+```
