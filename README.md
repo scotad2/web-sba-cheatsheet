@@ -285,8 +285,272 @@ cards.forEach(card => {
 });
 ```
 
-```html
-```
+### Form submission
 
 ```html
+<form id="myForm">
+    <input id="nameInput" type="text">
+    <button type="submit">Submit</button>
+</form>
+```
+
+```js
+const form = document.querySelector("#myForm");
+const input = document.querySelector("#nameInput");
+
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const name = input.value;
+
+    console.log(name);
+});
+```
+
+### Multiple inputs
+
+```html
+<form id="myForm">
+    <input id="firstName" type="text">
+    <input id="email" type="email">
+    <button type="submit">Submit</button>
+</form>
+```
+
+```js
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const firstName = document.querySelector("#firstName").value;
+    const email = document.querySelector("#email").value;
+
+    console.log(firstName);
+    console.log(email);
+});
+```
+
+### Fetching an API
+
+```js
+const response = await fetch("https://api.example.com/data");
+const data = await response.json();
+
+console.log(data);
+```
+
+### Promises - .then() / .catch()
+
+```js
+fetch("https://api.example.com/data")
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+```
+
+### Promises - async / await
+
+```js
+async function getData() {
+    const response = await fetch("https://api.example.com/data");
+    const data = await response.json();
+
+    console.log(data);
+}
+
+getData();
+```
+
+#### With try / catch
+
+```js
+async function getData() {
+    try {
+        const response = await fetch("https://api.example.com/data");
+        const data = await response.json();
+
+        console.log(data);
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+```
+
+### Handling API response errors
+
+```js
+async function getData() {
+    try {
+        const response = await fetch("https://api.example.com/data");
+
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        console.log(data);
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+```
+
+### Parsing JSON
+
+#### Convert response body into a JavaScript object
+
+```js
+const data = await response.json();
+
+/*
+{
+    "name": "Pikachu",
+    "type": "Electric"
+}
+*/
+```
+
+#### Access properties
+
+```js
+console.log(data.name);
+console.log(data.type);
+```
+
+### JSON arrays
+
+#### Access items
+
+```js
+/*
+[
+    {
+        "name": "Pikachu"
+    },
+    {
+        "name": "Charmander"
+    }
+]
+*/
+
+console.log(data[0].name);
+console.log(data[1].name);
+```
+
+### Iterating through arrays
+
+```js
+const names = ["Pikachu", "Eevee", "Mew"];
+
+names.forEach(name => {
+    console.log(name);
+});
+```
+
+#### Use .map() when you want to create a new array from an existing array.
+
+```js
+const names = ["Pikachu", "Eevee", "Mew"];
+
+const upperNames = names.map(name => name.toUpperCase());
+
+console.log(upperNames);
+```
+
+#### Mapping API data to HTML
+
+```js
+const html = data.map(pokemon => `
+    <div class="card">
+        <h2>${pokemon.name}</h2>
+    </div>
+`).join("");
+
+container.innerHTML = html;
+```
+
+### Complete API example
+
+```js
+async function getPokemon() {
+    try {
+        const response = await fetch(
+            "https://pokeapi.co/api/v2/pokemon"
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const html = data.results.map(pokemon => `
+            <div class="card">
+                <h2>${pokemon.name}</h2>
+            </div>
+        `).join("");
+
+        document.querySelector("#container").innerHTML = html;
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
+
+getPokemon();
+```
+
+### CSS Grid
+
+```css
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/*
+┌─────┐ ┌─────┐ ┌─────┐
+│  1  │ │  2  │ │  3  │
+└─────┘ └─────┘ └─────┘
+
+┌─────┐ ┌─────┐ ┌─────┐
+│  4  │ │  5  │ │  6  │
+└─────┘ └─────┘ └─────┘
+*/
+```
+
+### Responsive Grid
+
+```css
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+}
+```
+
+### Automatic responsive columns
+
+```css
+.container {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(250px, 1fr)
+    );
+    gap: 20px;
+}
 ```
