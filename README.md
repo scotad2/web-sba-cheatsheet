@@ -1591,7 +1591,7 @@ input:focus {}
 </html>
 ```
 
-Filtering Data with Events
+## Filtering Data with Events
 
 ```html
 <!DOCTYPE html>
